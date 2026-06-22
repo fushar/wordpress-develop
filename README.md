@@ -7,7 +7,7 @@ Welcome to the WordPress development repository! Please check out the [contribut
 
 ## Getting Started
 
-### Local development
+### Local developments
 
 WordPress is a PHP, MySQL, and JavaScript based project, and uses Node for its JavaScript dependencies. A local development environment is available to quickly get up and running.
 
