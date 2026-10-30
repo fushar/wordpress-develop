@@ -1,0 +1,126 @@
+<!doctype html><meta charset=utf-8><title>Admin bar icons</title><style>
+body{font:14px -apple-system,sans-serif;margin:16px;background:#f0f0f1}
+h1{font-size:20px}h2{font-size:17px;margin:32px 0 6px}p{max-width:900px;margin:6px 0 12px}
+table{border-collapse:collapse}
+td,th{border:1px solid #ccc;padding:8px 10px;text-align:left;vertical-align:middle;background:#fff}
+thead th{background:#f6f7f7}
+pre{margin:0;font:11.5px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;max-width:520px}
+pre.css{margin-top:6px;color:#6b4c00}
+mark{background:#fff3a3;color:inherit;border-radius:2px}
+table.additions mark{background:#abf2bc}
+code{font-size:12px}
+img{display:block}
+td.case{font-size:13px;width:240px;min-width:240px}
+td.res{font-size:13px;width:180px;min-width:180px}
+td.shot{background:#1d2327;min-width:120px}
+td.verdict{font-size:20px;text-align:center}
+</style>
+<h1>Admin bar and menu icons: 7.1 vs 7.2</h1>
+<h2>7.1 code on 7.2 (backward compatibility)</h2>
+<table><thead><tr><th>Case</th><th>setup</th><th>7.2 result</th><th>7.1</th><th>7.2</th></tr></thead><tbody><tr><td class="case">Plugin node draws a Dashicon on <code>.ab-item::before</code>.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'example3',
+	'title' =&gt; 'Example 3',
+) );</pre><pre class="css">#wpadminbar #wp-admin-bar-example3 &gt; <mark>.ab-item::before</mark> {
+	content: "\f109"; /* dashicons-admin-post */
+}</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-example3.png" alt="example3 on 7.1"></td><td class="shot"><img src="local-example3.png" alt="example3 on 7.2"></td></tr><tr><td class="case">Plugin node draws a Dashicon on <code>.ab-icon::before</code> for the empty span in its title.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'zz-css',
+	'title' =&gt; '<mark>&lt;span class="ab-icon"&gt;&lt;/span&gt;</mark>Own CSS',
+) );</pre><pre class="css">#wpadminbar #wp-admin-bar-zz-css <mark>.ab-icon::before</mark> {
+	content: "\f155"; /* star */
+}</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-css.png" alt="zz-css on 7.1"></td><td class="shot"><img src="local-zz-css.png" alt="zz-css on 7.2"></td></tr><tr><td class="case">Plugin node adds a Dashicon class to the empty span in its title.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'zz-span',
+	'title' =&gt; '<mark>&lt;span class="ab-icon dashicons-before dashicons-chart-bar"&gt;&lt;/span&gt;</mark>Dashicon span',
+) );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-span.png" alt="zz-span on 7.1"></td><td class="shot"><img src="local-zz-span.png" alt="zz-span on 7.2"></td></tr><tr><td class="case">Plugin node with its own image in the span.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'zz-img',
+	'title' =&gt; '<mark>&lt;span class="ab-icon"&gt;&lt;img …&gt;&lt;/span&gt;</mark>Own image',
+) );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-img.png" alt="zz-img on 7.1"></td><td class="shot"><img src="local-zz-img.png" alt="zz-img on 7.2"></td></tr><tr><td class="case">Core node with its glyph replaced on <code>.ab-icon::before</code>.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-comments <mark>.ab-icon::before</mark> {
+	content: "\f155"; /* star */
+}</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-comments.png" alt="comments on 7.1"></td><td class="shot"><img src="local-comments.png" alt="comments on 7.2"></td></tr><tr><td class="case">Core node whose title is replaced by one with no empty span.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'wp-logo',
+	<mark>'title' =&gt; '&lt;img …&gt; Brand',</mark>
+) );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-wp-logo.png" alt="wp-logo on 7.1"></td><td class="shot"><img src="local-wp-logo.png" alt="wp-logo on 7.2"></td></tr><tr><td class="case">Core node that drew on <code>.ab-item::before</code>, with its title replaced.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'edit',
+	<mark>'title' =&gt; 'New title',</mark>
+) );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-v3-edit.png" alt="v3-edit on 7.1"></td><td class="shot"><img src="local-v3-edit.png" alt="v3-edit on 7.2"></td></tr><tr><td class="case">Core node that drew on <code>.ab-icon::before</code>, with its title replaced and the empty span kept.</td><td><pre>$node = $wp_admin_bar-&gt;get_node( 'new-content' );
+$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'new-content',
+	'title' =&gt; <mark>str_replace( '&gt;New&lt;', '&gt;Add&lt;', $node-&gt;title )</mark>,
+) );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-v3-new-content.png" alt="v3-new-content on 7.1"></td><td class="shot"><img src="local-v3-new-content.png" alt="v3-new-content on 7.2"></td></tr><tr><td class="case">Menu item with a Dashicon that has a replacement.</td><td><pre>add_menu_page( …, <mark>'dashicons-chart-bar'</mark> );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-old-mapped.png" alt="zz-old-mapped on 7.1"></td><td class="shot"><img src="local-zz-old-mapped.png" alt="zz-old-mapped on 7.2"></td></tr><tr><td class="case">Post type with no <code>menu_icon</code>.</td><td><pre>register_post_type( 'zz_book', array(
+	'show_ui' =&gt; true,
+	<mark>// No menu_icon.</mark>
+) );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-cpt-default.png" alt="zz-cpt-default on 7.1"></td><td class="shot"><img src="local-zz-cpt-default.png" alt="zz-cpt-default on 7.2"></td></tr><tr><td class="case">Menu item with a Dashicon that has no replacement.</td><td><pre>add_menu_page( …, <mark>'dashicons-heart'</mark> );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-old-unmapped.png" alt="zz-old-unmapped on 7.1"></td><td class="shot"><img src="local-zz-old-unmapped.png" alt="zz-old-unmapped on 7.2"></td></tr><tr><td class="case">Menu item with a base64 SVG.</td><td><pre>add_menu_page( …, <mark>'data:image/svg+xml;base64,…'</mark> );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-old-svg.png" alt="zz-old-svg on 7.1"></td><td class="shot"><img src="local-zz-old-svg.png" alt="zz-old-svg on 7.2"></td></tr><tr><td class="case">Menu item with <code>none</code>.</td><td><pre>add_menu_page( …, <mark>'none'</mark> );</pre></td><td class="verdict">✅</td><td class="shot"><img src="71-zz-old-none.png" alt="zz-old-none on 7.1"></td><td class="shot"><img src="local-zz-old-none.png" alt="zz-old-none on 7.2"></td></tr><tr><td class="case">Core node with its glyph replaced on <code>.ab-item::before</code>.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-edit &gt; <mark>.ab-item::before</mark> {
+	content: "\f155"; /* star */
+}</pre></td><td class="verdict">❌</td><td class="shot"><img src="71-edit.png" alt="edit on 7.1"></td><td class="shot"><img src="local-edit.png" alt="edit on 7.2"></td></tr><tr><td class="case">Core node recolored on <code>.ab-item::before</code>.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-site-editor &gt; <mark>.ab-item::before</mark> {
+	<mark>color: #f86368;</mark>
+}</pre></td><td class="verdict">❌</td><td class="shot"><img src="71-site-editor.png" alt="site-editor on 7.1"></td><td class="shot"><img src="local-site-editor.png" alt="site-editor on 7.2"></td></tr><tr><td class="case">Core node hidden with an empty <code>content</code> on <code>.ab-item::before</code>.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-site-name &gt; <mark>.ab-item::before</mark> {
+	<mark>content: "";</mark>
+}</pre></td><td class="verdict">❌</td><td class="shot"><img src="71-v2-site-name.png" alt="v2-site-name on 7.1"></td><td class="shot"><img src="local-v2-site-name.png" alt="v2-site-name on 7.2"></td></tr><tr><td class="case">Core node hidden with <code>display: none</code> on <code>.ab-item::before</code>.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-my-sites &gt; <mark>.ab-item::before</mark> {
+	<mark>display: none;</mark>
+}</pre></td><td class="verdict">❌</td><td class="shot"><img src="71-v2-my-sites.png" alt="v2-my-sites on 7.1"></td><td class="shot"><img src="local-v2-my-sites.png" alt="v2-my-sites on 7.2"></td></tr></tbody></table>
+<h2>Code that works on 7.1 and 7.2</h2>
+<p>What to write to support both versions, with no version check in the admin bar.</p>
+<table class="additions"><thead><tr><th>Case</th><th>setup</th><th>result</th><th>7.1</th><th>7.2</th></tr></thead><tbody><tr><td class="case">Plugin node adds <code>icon</code> and keeps its Dashicon span.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'example1',
+	<mark>'icon'  =&gt; 'core-admin/pin',</mark>
+	'title' =&gt; '&lt;span class="ab-icon dashicons-before dashicons-admin-post"&gt;&lt;/span&gt;Example 1',
+) );</pre></td><td class="res">Dashicon on 7.1, SVG on 7.2</td><td class="shot"><img src="71-example1.png" alt="example1 on 7.1"></td><td class="shot"><img src="local-example1.png" alt="example1 on 7.2"></td></tr><tr><td class="case">Plugin node adds <code>icon</code> and keeps its <code>.ab-item::before</code> Dashicon.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'example2',
+	<mark>'icon'  =&gt; 'core-admin/pin',</mark>
+	'title' =&gt; 'Example 2',
+) );</pre><pre class="css">#wpadminbar #wp-admin-bar-example2 &gt; .ab-item::before {
+	content: "\f109"; /* dashicons-admin-post */
+}</pre></td><td class="res">Dashicon on 7.1, SVG on 7.2</td><td class="shot"><img src="71-example2.png" alt="example2 on 7.1"></td><td class="shot"><img src="local-example2.png" alt="example2 on 7.2"></td></tr><tr><td class="case">Plugin node adds <code>icon</code> and keeps its own <code>.ab-icon::before</code> CSS unchanged.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'zz-icon-css',
+	<mark>'icon'  =&gt; 'core-admin/pin',</mark>
+	'title' =&gt; '&lt;span class="ab-icon"&gt;&lt;/span&gt;Icon and CSS',
+) );</pre><pre class="css">#wpadminbar #wp-admin-bar-zz-icon-css .ab-icon::before {
+	content: "\f155"; /* star */
+}</pre></td><td class="res">Own glyph on 7.1, SVG on 7.2</td><td class="shot"><img src="71-zz-icon-css.png" alt="zz-icon-css on 7.1"></td><td class="shot"><img src="local-zz-icon-css.png" alt="zz-icon-css on 7.2"></td></tr><tr><td class="case">The same, with the CSS already scoped to <code>:not(.svg-icon)</code>.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'zz-icon-scoped',
+	<mark>'icon'  =&gt; 'core-admin/pin',</mark>
+	'title' =&gt; '&lt;span class="ab-icon"&gt;&lt;/span&gt;Scoped CSS',
+) );</pre><pre class="css">#wpadminbar #wp-admin-bar-zz-icon-scoped .ab-icon<mark>:not(.svg-icon)</mark>::before {
+	content: "\f155"; /* star */
+}</pre></td><td class="res">Own glyph on 7.1, SVG on 7.2</td><td class="shot"><img src="71-zz-icon-scoped.png" alt="zz-icon-scoped on 7.1"></td><td class="shot"><img src="local-zz-icon-scoped.png" alt="zz-icon-scoped on 7.2"></td></tr><tr><td class="case">Plugin node uses an icon from its own collection.</td><td><pre><mark>wp_register_icon( 'zz-plugin/square', … );</mark>
+$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'zz-own-icon',
+	<mark>'icon'  =&gt; 'zz-plugin/square',</mark>
+	'title' =&gt; '&lt;span class="ab-icon dashicons-before dashicons-chart-bar"&gt;&lt;/span&gt;Own icon',
+) );</pre></td><td class="res">Dashicon on 7.1, own SVG on 7.2</td><td class="shot"><img src="71-zz-own-icon.png" alt="zz-own-icon on 7.1"></td><td class="shot"><img src="local-zz-own-icon.png" alt="zz-own-icon on 7.2"></td></tr><tr><td class="case">Icon isn't registered, for example one from a later release, with a Dashicon fallback.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'example4',
+	<mark>'icon'  =&gt; 'core-admin/invalid-icon-name',</mark>
+	'title' =&gt; 'Example 4',
+) );</pre><pre class="css">#wpadminbar #wp-admin-bar-example4 &gt; .ab-item::before {
+	content: "\f109"; /* dashicons-admin-post */
+}</pre></td><td class="res">Dashicon on both, no gap</td><td class="shot"><img src="71-example4.png" alt="example4 on 7.1"></td><td class="shot"><img src="local-example4.png" alt="example4 on 7.2"></td></tr><tr><td class="case">Icon isn't registered, and there's no fallback.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'example5',
+	<mark>'icon'  =&gt; 'core-admin/invalid-icon-name',</mark>
+	'title' =&gt; 'Example 5',
+) );</pre></td><td class="res">No icon on both, no gap</td><td class="shot"><img src="71-example5.png" alt="example5 on 7.1"></td><td class="shot"><img src="local-example5.png" alt="example5 on 7.2"></td></tr><tr><td class="case">Core node given a different icon.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'updates',
+	<mark>'icon'  =&gt; 'core-admin/pin',</mark>
+) );</pre></td><td class="res">Core's icon on 7.1, pin SVG on 7.2</td><td class="shot"><img src="71-updates.png" alt="updates on 7.1"></td><td class="shot"><img src="local-updates.png" alt="updates on 7.2"></td></tr><tr><td class="case">Core node given an icon that isn't registered.</td><td><pre>$wp_admin_bar-&gt;add_node( array(
+	'id'    =&gt; 'new-content',
+	<mark>'icon'  =&gt; 'core-admin/invalid-icon-name',</mark>
+) );</pre></td><td class="res">Core's icon on 7.1, no icon on 7.2</td><td class="shot"><img src="71-new-content.png" alt="new-content on 7.1"></td><td class="shot"><img src="local-new-content.png" alt="new-content on 7.2"></td></tr><tr><td class="case">Core node glyph replaced with both selectors. This is the fix for the first lost row above.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-site-name &gt; .ab-item::before,
+<mark>#wpadminbar #wp-admin-bar-site-name &gt; .ab-item .ab-icon::before</mark> {
+	content: "\f155"; /* star */
+}</pre></td><td class="res">Star on both</td><td class="shot"><img src="71-site-name.png" alt="site-name on 7.1"></td><td class="shot"><img src="local-site-name.png" alt="site-name on 7.2"></td></tr><tr><td class="case">Core node recolored on both elements.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-site-editor &gt; .ab-item::before,
+<mark>#wpadminbar #wp-admin-bar-site-editor &gt; .ab-item .ab-icon</mark> {
+	color: #f86368;
+}</pre></td><td class="res">Red on both</td><td class="shot"><img src="71-v3-site-editor.png" alt="v3-site-editor on 7.1"></td><td class="shot"><img src="local-v3-site-editor.png" alt="v3-site-editor on 7.2"></td></tr><tr><td class="case">Core node hidden on both elements.</td><td><pre>// Core node, no PHP.</pre><pre class="css">#wpadminbar #wp-admin-bar-my-sites &gt; .ab-item::before,
+<mark>#wpadminbar #wp-admin-bar-my-sites &gt; .ab-item .ab-icon</mark> {
+	display: none;
+}</pre></td><td class="res">Hidden on both</td><td class="shot"><img src="71-v3-my-sites.png" alt="v3-my-sites on 7.1"></td><td class="shot"><img src="local-v3-my-sites.png" alt="v3-my-sites on 7.2"></td></tr><tr><td class="case">Menu item picks an SVG when the icon exists.</td><td><pre>add_menu_page( …,
+	<mark>function_exists( 'wp_is_registered_icon_name' ) &amp;&amp; wp_is_registered_icon_name( 'core-admin/pin' )
+		? 'core-admin/pin'
+		: 'dashicons-heart'</mark>
+);</pre></td><td class="res">Dashicon on 7.1, SVG on 7.2</td><td class="shot"><img src="71-zz-menu-registered.png" alt="zz-menu-registered on 7.1"></td><td class="shot"><img src="local-zz-menu-registered.png" alt="zz-menu-registered on 7.2"></td></tr><tr><td class="case">Post type picks an SVG the same way.</td><td><pre>register_post_type( 'zz_note', array(
+	'menu_icon' =&gt; <mark>function_exists( 'wp_is_registered_icon_name' ) &amp;&amp; wp_is_registered_icon_name( 'core-admin/pin' )
+		? 'core-admin/pin'
+		: 'dashicons-heart'</mark>,
+) );</pre></td><td class="res">Dashicon on 7.1, SVG on 7.2</td><td class="shot"><img src="71-zz-cpt-picked.png" alt="zz-cpt-picked on 7.1"></td><td class="shot"><img src="local-zz-cpt-picked.png" alt="zz-cpt-picked on 7.2"></td></tr><tr><td class="case">Menu item asks for an icon this version doesn't have.</td><td><pre>add_menu_page( …,
+	<mark>function_exists( 'wp_is_registered_icon_name' ) &amp;&amp; wp_is_registered_icon_name( 'core-admin/from-a-future-release' )
+		? 'core-admin/from-a-future-release'
+		: 'dashicons-heart'</mark>
+);</pre></td><td class="res">Dashicon on both</td><td class="shot"><img src="71-zz-menu-future.png" alt="zz-menu-future on 7.1"></td><td class="shot"><img src="local-zz-menu-future.png" alt="zz-menu-future on 7.2"></td></tr></tbody></table>
